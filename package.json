@@ -10,9 +10,9 @@
   "author": "Christopher Lane Hinson <lane@webperformance.com>",
   "license": "APSL-2.0",
   "dependencies": {
-    "legion-instrument": "file:///home/lane/legion/legion-instrument",
-    "legion-io": "file:///home/lane/legion/legion-io",
-    "legion-metrics": "file:///home/lane/legion/legion-metrics"
+    "legion-instrument": "https://github.com/lane-webperformance/legion-instrument.git#0.0.1",
+    "legion-io": "https://github.com/lane-webperformance/legion-io.git#0.0.1",
+    "legion-metrics": "https://github.com/lane-webperformance/legion-metrics.git#0.0.1"
   },
   "devDependencies": {
     "eslint": "^1.10.3",
