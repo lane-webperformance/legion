@@ -1,0 +1,23 @@
+{
+  "name": "legion",
+  "version": "0.0.1",
+  "description": "Legion load testing framework: main library",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "eslint ./src/** ./spec/** && jasmine && istanbul cover jasmine",
+    "clean": "rimraf node_modules coverage"
+  },
+  "author": "Christopher Lane Hinson <lane@webperformance.com>",
+  "license": "APSL-2.0",
+  "dependencies": {
+    "legion-instrument": "file:///home/lane/legion/legion-instrument",
+    "legion-io": "file:///home/lane/legion/legion-io",
+    "legion-metrics": "file:///home/lane/legion/legion-metrics"
+  },
+  "devDependencies": {
+    "eslint": "^1.10.3",
+    "istanbul": "^0.4.2",
+    "jasmine": "^2.4.1",
+    "rimraf": "^2.5.2"
+  }
+}
