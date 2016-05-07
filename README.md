@@ -12,8 +12,8 @@ http://www.example.com and measure the response time. This example uses legion
 and node-fetch, a promise-based HTTP client API.
 
 	npm init
-	npm install --save https://github.com/lane-webperformance/legion.git#0.0.1
-	npm install --save https://github.com/lane-webperformance/legion-io-fetch.git#0.0.1
+	npm install --save https://github.com/lane-webperformance/legion.git#v0.0.2
+	npm install --save https://github.com/lane-webperformance/legion-io-fetch.git#v0.0.2
 
 Having done this, edit your project's index file:
 
