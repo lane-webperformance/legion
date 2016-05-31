@@ -1,9 +1,17 @@
-/* eslint-disable no-console */
 var L = require('../src/index');
 
 describe('A testcase built with the Legion convenience library', function() {
   it('is sane', function(done) {
     L.run(5, L.of()).result().then(function(result) {
+      expect(result.tags.testcaseCompletion.run.count$sum).toBe(5);
+      done();
+    }).catch(function(err) {
+      done.fail(err);
+    });
+  });
+
+  it('can log the output', function(done) {
+    L.run(5, L.of()).log().then(function(result) {
       expect(result.tags.testcaseCompletion.run.count$sum).toBe(5);
       done();
     }).catch(function(err) {

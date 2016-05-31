@@ -1,5 +1,8 @@
 
-Legion is a tool library to support load and performance testing in Javascript.
+[![Build Status](https://travis-ci.org/lane-webperformance/legion.svg?branch=master)](https://travis-ci.org/lane-webperformance/legion)
+[![Dependency Status](https://gemnasium.com/badges/github.com/lane-webperformance/legion.svg)](https://gemnasium.com/github.com/lane-webperformance/legion)
+
+Legion is a load testing tool for HTTP servers and other kinds of software.
 It consists of two major components: legion-metrics, which collects and merges
 performance metrics from various sources; and legion-io, a Promise-based
 fluent library that makes it quick and easy to describe a testcase.
@@ -12,8 +15,8 @@ http://www.example.com and measure the response time. This example uses legion
 and node-fetch, a promise-based HTTP client API.
 
 	npm init
-	npm install --save https://github.com/lane-webperformance/legion.git#v0.0.2
-	npm install --save https://github.com/lane-webperformance/legion-io-fetch.git#v0.0.2
+	npm install --save https://github.com/lane-webperformance/legion.git#v0.0.3
+	npm install --save https://github.com/lane-webperformance/legion-io-fetch.git#v0.0.4
 
 Having done this, edit your project's index file:
 
@@ -70,13 +73,15 @@ snipped and simplified the output a little bit to make it easier to talk about:
 	  }
 	}
 
-Note a few things:
+One important note:
 
-* For the moment, legion doesn't separate HTTP and HTTPS traffic in
-in the statistical summary. HTTPS traffic is included under the
-protocol:HTTP heading.
-
-* If you look at the output outside of the protocol:HTTP block, you
+If you look at the output outside of the protocol:http(s) block, you
 might see 5 successes and 10 failures. Why? Because there were 5
 successful requests, 5 failed requests, and 5 testcase iterations
 that failed to to complete (due to the 5 failed requests).
+
+Until we have a good UI to explain what each statistic means, it
+will be important to pay close attention to how each block is
+tagged. This is the only way you'll know what the block is
+measuring.
+

@@ -23,15 +23,14 @@ module.exports = function(concurrency, testcase) {
 
   return {
     log : function() {
-      result.then(function(json_text) {
+      return result.then((json_text) => {
         console.log(json_text);
+        return this.result();
       });
     },
 
     result : function() {
-      return result.then(function(json_text) {
-        return JSON.parse(json_text);
-      });
+      return result.then(JSON.parse);
     }
   };
 };
