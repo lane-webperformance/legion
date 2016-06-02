@@ -37,3 +37,22 @@ describe('A testcase built with the Legion convenience library', function() {
     });
   });
 });
+
+describe('A testcase built with the Legion object', function() {
+  it('runs before and after scripts', function(done) {
+    var before_side_effect = false;
+    var after_side_effect = false;
+
+    L.create()
+     .beforeTest(() => { before_side_effect = true; })
+     .afterTest(() => { after_side_effect = true; })
+     .testcase(L.of()
+       .chain(() => expect(before_side_effect).toBe(true))
+       .chain(() => expect(after_side_effect).toBe(false)))
+     .run(20)
+       .then(() => expect(before_side_effect).toBe(true))
+       .then(() => expect(after_side_effect).toBe(true))
+       .then(done)
+       .catch(done.fail);
+  });
+});
