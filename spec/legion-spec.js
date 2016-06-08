@@ -1,8 +1,10 @@
-var L = require('../src/index');
+'use strict';
+
+const L = require('../src/index');
 
 describe('A testcase built with the Legion convenience library', function() {
-  it('is sane', function(done) {
-    L.run(5, L.of()).result().then(function(result) {
+  it('instruments whole-testcase completions', function(done) {
+    L.run(5, L.of()).metrics().then(function(result) {
       expect(result.tags.testcaseCompletion.run.count$sum).toBe(5);
       done();
     }).catch(function(err) {
@@ -11,7 +13,7 @@ describe('A testcase built with the Legion convenience library', function() {
   });
 
   it('can log the output', function(done) {
-    L.run(5, L.of()).log().then(function(result) {
+    L.run(5, L.get()).log().then(function(result) {
       expect(result.tags.testcaseCompletion.run.count$sum).toBe(5);
       done();
     }).catch(function(err) {
@@ -40,16 +42,16 @@ describe('A testcase built with the Legion convenience library', function() {
 
 describe('A testcase built with the Legion object', function() {
   it('runs before and after scripts', function(done) {
-    var before_side_effect = false;
-    var after_side_effect = false;
+    let before_side_effect = false;
+    let after_side_effect = false;
 
     L.create()
-     .beforeTest(() => { before_side_effect = true; })
-     .afterTest(() => { after_side_effect = true; })
+     .before(() => { before_side_effect = true; })
+     .after(() => { after_side_effect = true; })
      .testcase(L.of()
        .chain(() => expect(before_side_effect).toBe(true))
        .chain(() => expect(after_side_effect).toBe(false)))
-     .run(20)
+     .run(20).result()
        .then(() => expect(before_side_effect).toBe(true))
        .then(() => expect(after_side_effect).toBe(true))
        .then(done)

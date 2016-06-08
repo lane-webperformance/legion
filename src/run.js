@@ -1,36 +1,61 @@
 /* eslint-disable no-console */
 
-var Io = require('legion-io');
-var metrics = require('legion-metrics');
+'use strict';
 
-var withConcurrency = require('./withConcurrency');
-var reportingErrors = require('./reportingErrors');
-var namedTestcase = require('./namedTestcase');
+const Io = require('legion-io');
+const metrics = require('legion-metrics');
 
-module.exports = function(concurrency, testcase) {
+const withConcurrency = require('./withConcurrency');
+const reportingErrors = require('./reportingErrors');
+const namedTestcase = require('./namedTestcase');
+const beforeAndAfter = require('./beforeAndAfter');
+
+module.exports = function(users, testcase, options) {
+  options = options || {};
   testcase = Io.of().chain(testcase);
-  var target = metrics.Target.create(metrics.merge);
+  const target = metrics.Target.create(metrics.merge);
 
-  var result = 
-    withConcurrency(concurrency,
-      reportingErrors(
-        namedTestcase('run', testcase)))
-          .run(target.receiver().tag(metrics.tags.generic('everything','everything')));
+  // Build the testcase into a testcase that implements all of the extra
+  // features the user asked for.
+  const output = Promise.resolve().then(() =>
+    beforeAndAfter(options,
+      withConcurrency(users,
+        reportingErrors(
+          namedTestcase('run', testcase))))
+            .run(target.receiver().tag(metrics.tags.generic('everything','everything'))));
 
-  result = result.then(function() {
+  // Stringify to pretty human-readable JSON.
+  const metrics_string = output.then(function() {
     return JSON.stringify(target.get(), null, 2);
   });
 
   return {
     log : function() {
-      return result.then((json_text) => {
-        console.log(json_text);
-        return this.result();
+      return output.then(oput => metrics_string.then(json_text => {
+        console.log('output:  ' + oput);
+        console.log('metrics: ' + json_text);
+        return this.metrics();
+      })).catch(err => {
+        console.log('error:   ' + err);
+        throw err;
       });
     },
 
+    //Deprecated because the term 'result' is too generic.
     result : function() {
-      return result.then(JSON.parse);
+      return metrics_string.then(JSON.parse);
+    },
+
+    //alias for 'result'
+    metrics : function() {
+      //Stringifying and then re-parsing this result is a good thing, because
+      //the internal representation may be some weird intermediates that we
+      //might not know how to properly access.
+      return metrics_string.then(JSON.parse);
+    },
+
+    output : function() {
+      return output;
     }
   };
 };

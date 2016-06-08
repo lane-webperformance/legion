@@ -1,6 +1,8 @@
-var Io = require('legion-io');
-var metrics = require('legion-metrics');
-var instrument = require('legion-instrument');
+'use strict';
+
+const Io = require('legion-io');
+const metrics = require('legion-metrics');
+const instrument = require('legion-instrument');
 
 module.exports = function(name, testcase) {
   testcase = Io.of().chain(testcase);

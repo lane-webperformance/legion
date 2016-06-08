@@ -1,25 +1,27 @@
-var Io = require('legion-io');
-var R = require('ramda');
+'use strict';
 
-var Legion = {
-  _before_test : () => Promise.resolve(),
-  _after_test : () => Promise.resolve(),
+const Io = require('legion-io');
+const R = require('ramda');
+
+const Legion = {
+  _before : () => Promise.resolve(),
+  _after : () => Promise.resolve(),
   _testcase : null
 };
 
-Legion.beforeTest = function(f) {
+Legion.before = function(f) {
   f = R.compose(x => Promise.resolve(x), f);
 
   return Object.assign(Object.create(Legion), this, {
-    _before_test : R.composeP(f, this._before_test)
+    _before : R.composeP(f, this._before)
   });
 };
 
-Legion.afterTest = function(f) {
+Legion.after = function(f) {
   f = R.compose(x => Promise.resolve(x), f);
 
   return Object.assign(Object.create(Legion), this, {
-    _after_test : R.composeP(f, this._after_test)
+    _after : R.composeP(f, this._after)
   });
 };
 
@@ -30,16 +32,7 @@ Legion.testcase = function(tc) {
 };
 
 Legion.run = function(n) {
-  return Promise.resolve()
-   .then(this._before_test)
-   .then(() => module.exports.run(n, this._testcase))
-   .then(result => {
-     this._after_test();
-     return result;
-   }, err => {
-     this._after_test();
-     throw err;
-   });
+  return module.exports.run(n, this._testcase, { before: this._before, after: this._after });
 };
 
 module.exports.of = Io.of;
