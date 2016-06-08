@@ -1,6 +1,6 @@
 {
   "name": "legion",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "Legion load testing framework: main library",
   "main": "src/index.js",
   "scripts": {
