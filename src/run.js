@@ -11,8 +11,10 @@ const namedTestcase = require('./namedTestcase');
 const beforeAndAfter = require('./beforeAndAfter');
 
 module.exports = function(users, testcase, options) {
+  if( !Io.isIo(testcase) )
+    throw new Error('parameter \'testcase\' is not an instance of Io');
+
   options = options || {};
-  testcase = Io.of().chain(testcase);
   const target = metrics.Target.create(metrics.merge);
 
   // Build the testcase into a testcase that implements all of the extra

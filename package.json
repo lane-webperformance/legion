@@ -3,6 +3,7 @@
   "version": "0.0.8",
   "description": "Legion load testing framework: main library",
   "main": "src/index.js",
+  "bin": "./src/main.hs",
   "scripts": {
     "test": "eslint ./src/** ./spec/** && jasmine && istanbul cover jasmine",
     "clean": "rimraf node_modules coverage"
@@ -10,6 +11,8 @@
   "author": "Christopher Lane Hinson <lane@webperformance.com>",
   "license": "APSL-2.0",
   "dependencies": {
+    "command-line-args": "^3.0.0",
+    "command-line-usage": "^3.0.1",
     "legion-instrument": "https://github.com/lane-webperformance/legion-instrument.git#v0.0.6",
     "legion-io": "https://github.com/lane-webperformance/legion-io.git#v0.0.6",
     "legion-metrics": "https://github.com/lane-webperformance/legion-metrics.git#v0.0.4",
