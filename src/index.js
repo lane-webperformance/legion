@@ -46,3 +46,4 @@ module.exports.reportingErrors = require('./reportingErrors');
 module.exports.create = function() {
   return Object.create(Legion);
 };
+
