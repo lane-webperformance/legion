@@ -3,7 +3,6 @@
   "version": "0.0.11",
   "description": "Legion load testing framework: main library",
   "main": "src/index.js",
-  "bin": "./src/main.js",
   "scripts": {
     "test": "eslint ./src/** ./spec/** && jasmine && istanbul cover jasmine",
     "clean": "rimraf node_modules coverage"
