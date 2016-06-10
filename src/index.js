@@ -2,6 +2,7 @@
 
 const Io = require('legion-io');
 const R = require('ramda');
+const main = require('./main');
 
 const Legion = {
   _before : () => Promise.resolve(),
@@ -33,6 +34,10 @@ Legion.testcase = function(tc) {
 
 Legion.run = function(n) {
   return module.exports.run(n, this._testcase, { before: this._before, after: this._after });
+};
+
+Legion.main = function() {
+  return main(this);
 };
 
 module.exports.of = Io.of;

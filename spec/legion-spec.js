@@ -31,7 +31,7 @@ describe('A testcase built with the Legion convenience library', function() {
   });
 
   it('catches all errors', function(done) {
-    L.run(5, L.of().chain(function() { throw 'oops!'; })).result().then(function(result) {
+    L.run(5, L.of().chain(function() { throw 'expected failure'; })).result().then(function(result) {
       expect(result.tags.everything.everything.problems$sum).toBe(5);
       done();
     }).catch(function(err) {
