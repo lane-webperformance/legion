@@ -5,7 +5,7 @@ const L = require('../src/index');
 describe('A testcase built with the Legion convenience library', function() {
   it('instruments whole-testcase completions', function(done) {
     L.run(5, L.of()).metrics().then(function(result) {
-      expect(result.tags.testcaseCompletion.run.count$sum).toBe(5);
+      expect(result.tags.testcaseCompletion.run.values.duration.$avg.size).toBe(5);
       done();
     }).catch(function(err) {
       done.fail(err);
@@ -14,7 +14,7 @@ describe('A testcase built with the Legion convenience library', function() {
 
   it('can log the output', function(done) {
     L.run(5, L.get()).log().then(function(result) {
-      expect(result.tags.testcaseCompletion.run.count$sum).toBe(5);
+      expect(result.tags.testcaseCompletion.run.values.duration.$avg.size).toBe(5);
       done();
     }).catch(function(err) {
       done.fail(err);
