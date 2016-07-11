@@ -7,7 +7,8 @@ const main = require('./main');
 const Legion = {
   _before : () => Promise.resolve(),
   _after : () => Promise.resolve(),
-  _testcase : null
+  _testcase : null,
+  _metrics_target : null
 };
 
 Legion.before = function(f) {
@@ -26,6 +27,12 @@ Legion.after = function(f) {
   });
 };
 
+Legion.metricsTarget = function(target) {
+  return Object.assign(Object.create(Legion), this, {
+    _metrics_target: target
+  });
+};
+
 Legion.testcase = function(tc) {
   return Object.assign(Object.create(Legion), this, {
     _testcase : tc
@@ -33,7 +40,11 @@ Legion.testcase = function(tc) {
 };
 
 Legion.run = function(n) {
-  return module.exports.run(n, this._testcase, { before: this._before, after: this._after });
+  return module.exports.run(n, this._testcase, {
+    before: this._before,
+    after: this._after,
+    metricsTarget: this._metrics_target
+  });
 };
 
 Legion.main = function() {

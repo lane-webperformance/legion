@@ -25,14 +25,14 @@ describe('A testcase built with the Legion convenience library', function() {
     L.run(5, L.get().chain(function(receiver) {
       expect(typeof receiver.receive).toBe('function');
       done();
-    })).result().catch(function(err) {
+    })).metrics().catch(function(err) {
       done.fail(err);
     });
   });
 
   it('catches all errors', function(done) {
-    L.run(5, L.of().chain(function() { throw 'expected failure'; })).result().then(function(result) {
-      expect(result.tags.everything.everything.problems$sum).toBe(5);
+    L.run(5, L.of().chain(function() { throw 'expected failure'; })).metrics().then(function(result) {
+      expect(result.tags.everything.everything.problems.problems$sum).toBe(5);
       done();
     }).catch(function(err) {
       done.fail(err);
@@ -51,7 +51,7 @@ describe('A testcase built with the Legion object', function() {
      .testcase(L.of()
        .chain(() => expect(before_side_effect).toBe(true))
        .chain(() => expect(after_side_effect).toBe(false)))
-     .run(20).result()
+     .run(20).metrics()
        .then(() => expect(before_side_effect).toBe(true))
        .then(() => expect(after_side_effect).toBe(true))
        .then(done)
