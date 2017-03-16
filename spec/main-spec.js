@@ -14,7 +14,7 @@ describe('The main method', function() {
     testcase.main().then(() => {
       expect(side_effect).toBe(true);
       done();
-    });
+    }).catch(done.fail);
   });
 
   it('sets the exit code', function(done) {
@@ -22,7 +22,7 @@ describe('The main method', function() {
       .before(() => { throw new Error('expected error'); })
       .testcase(L.of());
 
-    testcase.main().catch(() => {
+    testcase.main().then(done.fail).catch(() => {
       expect(process.exitCode).toBe(1);
       process.exitCode = undefined;
       done();

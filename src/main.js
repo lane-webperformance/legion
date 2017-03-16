@@ -7,9 +7,15 @@ const capture = (function() {
   try      { return require('legion-capture'); }
   catch(e) { return null;                      }
 })();
+const control = (function() {
+  try      { return require('legion-control'); }
+  catch(e) { return null;                      }
+})();
 const metrics = require('legion-metrics');
 
 const cli_option_definitions = [
+  { name: 'control-endpoint',        type: String,  typeLabel: '[underline]{URL}',     description: 'endpoint of control server' },
+  { name: 'control-interval',        type: String,  typeLabel: '[underline]{seconds}',     description: 'interval between updating control data' },
   { name: 'capture-endpoint',        type: String,  typeLabel: '[underline]{URL}',     description: 'endpoint of metrics capture server' },
   { name: 'capture-interval',        type: Number,  typeLabel: '[underline]{seconds}', description: 'interval between streaming metrics to the capture server' },
   { name: 'help',                    type: Boolean,                                    description: 'print this help message' },
@@ -56,12 +62,21 @@ function main(testcase) {
         1000*(options['capture-interval'] || 60),
         { project_key:options['project-key'] }));
 
+  if( options['control-endpoint'] ) {
+    testcase = testcase.control(control.create({
+      endpoint: options['control-endpoint'],
+      project_key: options['project-key']
+    }));
+  }
+
   options.users = options.users || 1;
 
   return Promise.resolve()
-    .then(() => testcase.run(options.users).log())
+    .then(() => testcase.run(options.users))
+    .then(results => results.log())
     .catch(err => {
       process.exitCode = 1;
+      console.error(err);
       throw err;
     });
 }

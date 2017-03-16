@@ -1,5 +1,6 @@
 'use strict';
 
+const services = require('../src/services');
 const withConcurrency = require('../src/withConcurrency');
 const Io = require('legion-io');
 
@@ -13,7 +14,7 @@ describe('The withConcurrency function', function() {
     const testcase = Io.of().chain(() => Io.resolve(wait()));
     
     const start = Date.now();
-    withConcurrency(5,testcase).run().then(() => {
+    withConcurrency(5,testcase).run(services()).then(() => {
       expect(Date.now()-start).toBeLessThan(600);
       expect(Date.now()-start).toBeGreaterThan(400);
       done();

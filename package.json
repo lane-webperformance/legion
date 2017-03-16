@@ -1,6 +1,6 @@
 {
   "name": "legion",
-  "version": "0.0.20",
+  "version": "0.0.21",
   "description": "Legion load testing framework: main library",
   "main": "src/index.js",
   "scripts": {
@@ -12,13 +12,15 @@
   "dependencies": {
     "command-line-args": "^4.0.1",
     "command-line-usage": "^4.0.0",
-    "legion-instrument": "https://github.com/lane-webperformance/legion-instrument.git#v0.0.20",
-    "legion-io": "https://github.com/lane-webperformance/legion-io.git#v0.0.20",
-    "legion-metrics": "https://github.com/lane-webperformance/legion-metrics.git#v0.0.20",
-    "ramda": "^0.23.0"
+    "legion-instrument": "https://github.com/lane-webperformance/legion-instrument.git#v0.0.22",
+    "legion-io": "https://github.com/lane-webperformance/legion-io.git#v0.0.22",
+    "legion-metrics": "https://github.com/lane-webperformance/legion-metrics.git#v0.0.22",
+    "ramda": "^0.23.0",
+    "uuid": "^3.0.1"
   },
   "optionalDependencies": {
-    "legion-capture": "https://github.com/lane-webperformance/legion-capture.git#v0.0.20"
+    "legion-capture": "https://github.com/lane-webperformance/legion-capture.git#v0.0.22",
+    "legion-control": "file:///home/lane/legion/legion-control"
   },
   "devDependencies": {
     "eslint": "^2.11.1",

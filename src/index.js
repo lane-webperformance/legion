@@ -8,7 +8,8 @@ const Legion = {
   _before : () => Promise.resolve(),
   _after : () => Promise.resolve(),
   _testcase : null,
-  _metrics_target : null
+  _metrics_target : null,
+  _control : null
 };
 
 Legion.before = function(f) {
@@ -33,6 +34,12 @@ Legion.metricsTarget = function(target) {
   });
 };
 
+Legion.control = function(control) {
+  return Object.assign(Object.create(Legion), this, {
+    _control: control
+  });
+};
+
 Legion.testcase = function(tc) {
   return Object.assign(Object.create(Legion), this, {
     _testcase : tc
@@ -43,7 +50,8 @@ Legion.run = function(n) {
   return module.exports.run(n, this._testcase, {
     before: this._before,
     after: this._after,
-    metricsTarget: this._metrics_target
+    metricsTarget: this._metrics_target,
+    control: this._control
   });
 };
 
@@ -56,8 +64,9 @@ module.exports.get = Io.get;
 
 module.exports.run = require('./run');
 module.exports.namedTestcase = require('./namedTestcase');
-module.exports.withConcurrency = require('./withConcurrency');
 module.exports.reportingErrors = require('./reportingErrors');
+module.exports.services = require('./services');
+module.exports.withConcurrency = require('./withConcurrency');
 
 module.exports.create = function() {
   return Object.create(Legion);

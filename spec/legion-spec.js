@@ -22,12 +22,11 @@ describe('A testcase built with the Legion convenience library', function() {
   });
 
   it('has access to the Io\'s embedded state', function(done) {
-    L.run(5, L.get().chain(function(receiver) {
-      expect(typeof receiver.receive).toBe('function');
-      done();
-    })).metrics().catch(function(err) {
-      done.fail(err);
-    });
+    L.run(5, L.get().chain(function(state) {
+      expect(typeof state.services.metrics.receive).toBe('function');
+    })).metrics()
+       .then(done)
+       .catch(done.fail);
   });
 
   it('catches all errors', function(done) {
