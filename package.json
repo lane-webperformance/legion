@@ -20,7 +20,7 @@
   },
   "optionalDependencies": {
     "legion-capture": "https://github.com/lane-webperformance/legion-capture.git#v0.0.22",
-    "legion-control": "file:///home/lane/legion/legion-control"
+    "legion-control": "https://github.com/lane-webperformance/legion-control.git#v0.0.22"
   },
   "devDependencies": {
     "eslint": "^2.11.1",

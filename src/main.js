@@ -37,10 +37,9 @@ function printUsage() {
 }
 
 /*
- * Run the load test using the specified options.
+ * Incorporate command line arguments into the specified testcase, and run it.
  *
- * options.testcase - the path to require() the testcase.
- * options.users - the number of concurrent users.
+ * * testcase - the Legion object containing the test configuration.
  */
 function main(testcase) {
   const options = cli(cli_option_definitions);
@@ -51,8 +50,8 @@ function main(testcase) {
     return;
   }
 
-  if( !options['project-key'] )
-    options['project-key'] = 'default';
+  if( options['project-key'] )
+    testcase = testcase.projectKey(options['project-key']);
 
   /* istanbul ignore next */
   if( options['capture-endpoint'] )
@@ -62,10 +61,10 @@ function main(testcase) {
         1000*(options['capture-interval'] || 60),
         { project_key:options['project-key'] }));
 
+  /* istanbul ignore next */
   if( options['control-endpoint'] ) {
     testcase = testcase.control(control.create({
-      endpoint: options['control-endpoint'],
-      project_key: options['project-key']
+      endpoint: options['control-endpoint']
     }));
   }
 

@@ -8,7 +8,7 @@ describe('The main method', function() {
     let side_effect = false;
 
     const testcase = L.create()
-      .testcase(L.of()
+      .withTestcase(L.of()
         .chain(() => { side_effect = true; }));
 
     testcase.main().then(() => {
@@ -19,8 +19,8 @@ describe('The main method', function() {
 
   it('sets the exit code', function(done) {
     const testcase = L.create()
-      .before(() => { throw new Error('expected error'); })
-      .testcase(L.of());
+      .withBeforeTestAction(() => { throw new Error('expected error'); })
+      .withTestcase(L.of());
 
     testcase.main().then(done.fail).catch(() => {
       expect(process.exitCode).toBe(1);

@@ -8,44 +8,36 @@ const withConcurrency = require('./withConcurrency');
 const reportingErrors = require('./reportingErrors');
 const namedTestcase = require('./namedTestcase');
 const beforeAndAfter = require('./beforeAndAfter');
-const services = require('./services');
 
-module.exports = function(users, testcase, options) {
+module.exports = function(options, testcase) {
   if( !Io.isIo(testcase) )
     throw new Error('parameter \'testcase\' is not an instance of Io');
 
-  options = options || {};
+  // setup default options
+  options = Object.assign({
+    name : null,
+    users : 1,
+    beforeTestActions : () => Promise.resolve(),
+    afterTestActions : () => Promise.resolve(),
+    addGlobalState : x => Promise.resolve(x),
+    addUserState : x => Promise.resolve(x)
+  }, options);
 
-  const state = {};
-  state.services = services(options);
+  const global_state = Promise.resolve({}).then(options.addGlobalState);
 
-  // Build the testcase into a testcase that implements all of the extra
-  // features the user asked for.
-  const output = Promise.resolve().then(() =>
-    beforeAndAfter(options,
-      withConcurrency(users,
-        reportingErrors(
-          namedTestcase('run', testcase))))
-            .run(state));
+  const output = global_state.then(state => {
+    return beforeAndAfter({ before : options.beforeTestActions, after : options.afterTestActions },
+      withConcurrency({ concurrency : options.users, addUserState : x => Promise.resolve(x).then(options.addUserState) },
+        reportingErrors(namedTestcase(options.name, testcase))))
+          .run(state);
+  });
 
   // Stringify to pretty human-readable JSON.
-  const metrics_string = output.then(function() {
-    // If we have something other than the default metrics target
-    // then we shouldn't trust its contents -- let the user get
-    // it out of the metrics target directly if that's what they
-    // want to do. As an example of why this would be a problem,
-    // if the metrics target is streaming data to a metrics
-    // capture server (and therefore the metrics target's contents
-    // are being reset every time we send a block of metrics data)
-    // then any request to get() the contents
-    // will be subject to a race condition, and even then it
-    // will be difficult to understand what the metrics mean
-    // because they represent some indeterminately recent
-    // period of time.
-    if( options.metricsTarget )
-      return JSON.stringify({});
+  const metrics_string = output.then(() => global_state).then(state => {
+    if( ((((state || {}).services || {})._legion || {}).metrics_target || {}).get )
+      return JSON.stringify(state.services._legion.metrics_target.get(), null, 2);
 
-    return JSON.stringify(state.services.legion.metrics_target.get(), null, 2);
+    return JSON.stringify({});
   });
 
   return {
@@ -69,6 +61,15 @@ module.exports = function(users, testcase, options) {
 
     output : function() {
       return output;
+    },
+
+    assert : function() {
+      return this.metrics().then(metrics => {
+        if( ((((metrics || {}).tags || {}).everything || {}).everything || {}).problems )
+          throw new Error('A problem was recorded.');
+
+        return metrics;
+      });
     }
   };
 };

@@ -1,30 +1,24 @@
 'use strict';
 
 const Io = require('legion-io');
-const uuid = require('uuid');
 
-module.exports = function(concurrency, testcase) {
-  if( typeof concurrency !== 'number' )
-    throw new Error('The concurrency parameter must be number.');
+module.exports = function(options, testcase) {
+  options = Object.assign({}, {
+    concurrency : 1,
+    addUserState : (x) => Promise.resolve(x)
+  }, options);
 
-  if( concurrency <= 0 )
-    console.log('warning: concurrency == ' + concurrency); // eslint-disable-line no-console
+  /* istanbul ignore next */
+  if( typeof options.concurrency !== 'number' || options.concurrency < 0 )
+    throw new Error('The concurrency option must be a positive number.');
 
   return Io.get().chain(state => {
     const results = [];
     testcase = Io.of().chain(testcase);
 
-    for( let user_number = 0; user_number < concurrency; user_number++ ) {
-      const user_state = Object.assign({}, state, { 
-        services : Object.assign({}, state.services, {
-          user : {
-            number : user_number,
-            uuid : uuid.v4()
-          }
-        })
-      });
-
-      results.push(testcase.run(Object.assign({}, user_state)));
+    for( let user_number = 0; user_number < options.concurrency; user_number++ ) {
+      const user_state = Promise.resolve(state).then(options.addUserState);
+      results.push(user_state.then(state => testcase.run(state)));
     }
 
     return Io.resolve(Promise.all(results));

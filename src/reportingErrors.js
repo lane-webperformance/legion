@@ -10,12 +10,8 @@ module.exports = function(testcase) {
 
   return Io.get().chain(function(state) {
     const result = testcase.run(state).catch(function(err) {
-      try {
-        console.log(err);
-        state.services.metrics.receive(metrics.problem(err));
-      } catch(should_not_happen) {
-        console.log(should_not_happen);
-      }
+      console.log(err);
+      state.services.metrics.receive(metrics.problem(err));
     });
 
     return Io.resolve(result);

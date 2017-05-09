@@ -12,7 +12,7 @@ const Io = require('legion-io');
 //
 const withSideEffect = (f) => (value) => {
   return Io.of()
-           .chain(f || (() => undefined))
+           .chain(f)
            .chain(() => value);
 };
 
