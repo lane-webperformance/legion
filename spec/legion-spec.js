@@ -93,4 +93,59 @@ describe('A testcase built using the Legion builder object', function() {
         .then(done)
         .catch(done.fail);
   });
+
+  it('supports packaged modules', function(done) {
+    let before_test = false;
+    let after_test = false;
+    let users = 0;
+
+    const my_module = { _legion_hooks: {
+      beforeTestAction : () => {
+        before_test = true;
+      },
+
+      afterTestAction : () => {
+        after_test = true;
+      },
+
+      globalService : (services) => {
+        return Object.assign({}, services, {
+          my_global_service : users
+        });
+      },
+
+      userService : (services) => {
+        users += 1;
+
+        return Object.assign({}, services, {
+          my_user_service : users
+        });
+      }
+    }};
+
+    L.create()
+      .using(my_module)
+      .withTestcase(L.get()
+        .chain(state => {
+          expect(state.services.my_global_service).toBe(0);
+          expect(state.services.my_user_service).toBeGreaterThan(0);
+          expect(state.services.my_user_service).toBeLessThan(3);
+          expect(before_test).toBe(true);
+          expect(after_test).toBe(false);
+        }))
+      .run(2).assert()
+      .then(() => expect(after_test).toBe(true))
+      .then(() => expect(users).toBe(2))
+      .then(done)
+      .catch(done.fail);
+  });
+
+  it('allows all module hooks to be undefined', function(done) {
+    L.create()
+      .using({_legion_hooks:{}})
+      .withTestcase(L.of())
+      .run(5).assert()
+      .then(done)
+      .catch(done.fail);
+  });
 });

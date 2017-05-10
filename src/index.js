@@ -14,6 +14,26 @@ const Legion = {
   _testcase : null
 };
 
+Legion.using = function(module) {
+  let result = this;
+
+  module = module._legion_hooks;
+
+  if( module.beforeTestAction )
+    result = result.withBeforeTestAction( module.beforeTestAction );
+
+  if( module.afterTestAction )
+    result = result.withAfterTestAction( module.afterTestAction );
+
+  if( module.globalService )
+    result = result.withGlobalService( module.globalService );
+
+  if( module.userService )
+    result = result.withUserService( module.userService );
+
+  return result;
+};
+
 Legion.withBeforeTestAction = function(f) {
   if( typeof f !== 'function' )
     throw new Error('not a function: ' + f);
