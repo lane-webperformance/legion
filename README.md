@@ -49,6 +49,10 @@ L.prototype
 
 Prototype of all Legion load test objects.
 
+### L.prototype.using(module : object)
+
+Imports a legion module into the load test.
+
 ### L.prototype.withBeforeTestAction(f : function)
 
 Adds an action to run before starting the load test. If you have multiple Legion
