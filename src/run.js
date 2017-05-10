@@ -45,7 +45,7 @@ module.exports = function(options, testcase) {
       return output.then(oput => metrics_string.then(json_text => {
         console.log('output:  ' + oput);
         console.log('metrics: ' + json_text);
-        return this.metrics();
+        return this.assert();
       })).catch(err => {
         console.log('error:   ' + err);
         throw err;
@@ -66,7 +66,7 @@ module.exports = function(options, testcase) {
     assert : function() {
       return this.metrics().then(metrics => {
         if( ((((metrics || {}).tags || {}).everything || {}).everything || {}).problems )
-          throw new Error('A problem was recorded.');
+          throw new Error('At least one problem was recorded.');
 
         return metrics;
       });
