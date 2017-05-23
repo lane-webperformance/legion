@@ -64,7 +64,7 @@ describe('A testcase built using the Legion builder object', function() {
     const ids = [];
 
     L.create()
-      .withTestcase(L.getUserUniqueID().chain(uuid => {
+      .withTestcase(L.getUserUniqueId().chain(uuid => {
         expect(ids.includes(uuid)).toBe(false);
         ids.push(uuid);
       })).run(1).assert()
@@ -76,7 +76,7 @@ describe('A testcase built using the Legion builder object', function() {
     L.create()
       .withUserService(services => Object.assign(services, { foo : 'bar' }))
       .withTestcase(L.get().chain(state =>
-        expect(state.services.foo).toBe('bar')
+        expect(state.foo).toBe('bar')
       )).run(1).assert()
         .then(done)
         .catch(done.fail);
@@ -86,10 +86,11 @@ describe('A testcase built using the Legion builder object', function() {
     let merges = 0;
 
     L.create()
-      .withMetricsTarget(metrics.Target.create(metrics.merge, () => { merges++; }))
+      .withMetricsTarget(metrics.Target.create(metrics.merge, () => { merges++; return 'Hello, World'; }))
       .withTestcase(L.of())
       .run(1).assert()
-        .then(() => expect(merges).toBe(1))
+        .then(hello_world => expect(hello_world).toBe(hello_world))
+        .then(() => expect(merges).toBe(2)) // 1 call to merge the testcaseCompletion event, 1 call to flush metrics at end-of-test
         .then(done)
         .catch(done.fail);
   });
@@ -108,28 +109,22 @@ describe('A testcase built using the Legion builder object', function() {
         after_test = true;
       },
 
-      globalService : (services) => {
-        return Object.assign({}, services, {
-          my_global_service : users
-        });
-      },
+      globalService : services => services.withService('my_global_service', users),
 
-      userService : (services) => {
+      userService : services => {
         users += 1;
 
-        return Object.assign({}, services, {
-          my_user_service : users
-        });
+        return services.withService('my_user_service', users);
       }
     }};
 
     L.create()
       .using(my_module)
       .withTestcase(L.get()
-        .chain(state => {
-          expect(state.services.my_global_service).toBe(0);
-          expect(state.services.my_user_service).toBeGreaterThan(0);
-          expect(state.services.my_user_service).toBeLessThan(3);
+        .chain(services => {
+          expect(services.my_global_service).toBe(0);
+          expect(services.my_user_service).toBeGreaterThan(0);
+          expect(services.my_user_service).toBeLessThan(3);
           expect(before_test).toBe(true);
           expect(after_test).toBe(false);
         }))

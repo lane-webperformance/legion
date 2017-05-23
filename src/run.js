@@ -23,7 +23,7 @@ module.exports = function(options, testcase) {
     addUserState : x => Promise.resolve(x)
   }, options);
 
-  const global_state = Promise.resolve({}).then(options.addGlobalState);
+  const global_state = Promise.resolve().then(options.addGlobalState);
 
   const output = global_state.then(state => {
     return beforeAndAfter({ before : options.beforeTestActions, after : options.afterTestActions },
@@ -34,8 +34,8 @@ module.exports = function(options, testcase) {
 
   // Stringify to pretty human-readable JSON.
   const metrics_string = output.then(() => global_state).then(state => {
-    if( ((((state || {}).services || {})._legion || {}).metrics_target || {}).get )
-      return JSON.stringify(state.services._legion.metrics_target.get(), null, 2);
+    if( state && state.getMetricsTarget && state.getMetricsTarget() )
+      return Promise.resolve(state.getMetricsTarget().flush()).then(x => JSON.stringify(x, null, 2));
 
     return JSON.stringify({});
   });
@@ -56,7 +56,7 @@ module.exports = function(options, testcase) {
       //Stringifying and then re-parsing this result is a good thing, because
       //the internal representation may be some weird intermediates that the user
       //might not know how to access programatically.
-      return metrics_string.then(JSON.parse);
+      return metrics_string.then(x => JSON.parse(x));
     },
 
     output : function() {

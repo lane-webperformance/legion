@@ -9,7 +9,7 @@ module.exports = function(name, testcase) {
 
   if( name ) {
     testcase = instrument(testcase, metrics.tags.generic('testcaseCompletion', name));
-    testcase = Io.localPath(['services','metrics'], receiver => receiver && receiver.tag(metrics.tags.generic('testcase', name)), testcase);
+    testcase = Io.local(receiver => receiver.tag(metrics.tags.generic('testcase', name)), testcase);
   }
 
   return testcase;

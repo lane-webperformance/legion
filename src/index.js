@@ -1,10 +1,9 @@
 'use strict';
 
 const Io = require('legion-io');
-const metrics = require('legion-metrics');
+const core = require('legion-core');
 const R = require('ramda');
 const main = require('./main');
-const defaultServices = require('./defaultServices');
 
 const Legion = {
   _beforeTestActions : () => Promise.resolve(),
@@ -79,30 +78,18 @@ Legion.withUserService = function(f) {
 };
 
 Legion.withMetricsTarget = function(target) {
-  return this.withGlobalService(services => {
-    services._legion = services._legion || {};
-    services._legion.metrics_target = target;
-    services.metrics = services._legion.metrics_target.receiver().tag(metrics.tags.generic('everything', 'everything'));
-
-    return services;
-  });
+  return this.withGlobalService(services => services.withMetricsTarget(target));
 };
 
 Legion.withController = function(controller) {
-  return this.withGlobalService(services => {
-    services.controller = controller;
-    return services;
-  });
+  return this.withGlobalService(services => services.withController(controller));
 };
 
 Legion.withProjectKey = function(project_key) {
   if( typeof project_key !== 'string' )
     throw new Error('project key must be a string');
 
-  return this.withGlobalService(services => {
-    services.project_key = project_key;
-    return services;
-  });
+  return this.withGlobalService(services => services.withProjectKey(project_key));
 };
 
 Legion.withTestcase = function(tc) {
@@ -117,8 +104,8 @@ Legion.run = function(n) {
     users : n,
     beforeTestActions : this._beforeTestActions,
     afterTestActions : this._afterTestActions,
-    addGlobalState : defaultServices.withServices(x => Promise.resolve(x).then(defaultServices).then(this._addGlobalServices)),
-    addUserState : defaultServices.withServices(x => Promise.resolve(x).then(defaultServices.user).then(this._addUserServices))
+    addGlobalState : this._addGlobalServices,
+    addUserState : this._addUserServices
   }, this._testcase);
 };
 
@@ -127,26 +114,15 @@ Legion.main = function() {
 };
 
 module.exports.create = function() {
-  return Object.create(Legion);
+  return Object.create(Legion).using(core);  // FIXME: don't automatically include core
 };
 
 module.exports.prototype = Legion;
 module.exports.of = Io.of;
 module.exports.get = Io.get;
 
-module.exports.projectKey = () => Io.get().chain(state => {
-  if( typeof state.services.project_key !== 'string' )
-    throw new Error('project_key not defined');
-
-  return state.services.project_key;
-});
-
-module.exports.controller = () => Io.get().chain(state => {
-  if( typeof state.services.controller !== 'object' )
-    throw new Error('controller not defined');
-
-  return state.services.controller;
-});
+module.exports.projectKey = () => Io.get().chain(state => state.getProjectKey());
+module.exports.controller = () => Io.get().chain(state => state.getController());
 
 module.exports.getControlData = () => module.exports.projectKey().chain(project_key =>
   module.exports.controller().chain(controller =>
@@ -156,7 +132,7 @@ module.exports.getCounters = (counter_key, n) => module.exports.projectKey().cha
   module.exports.controller().chain(controller =>
     Io.of(controller.getCounters(project_key, counter_key, n))));
 
-module.exports.getUserUniqueID = () => module.exports.get().chain(state => state.services.user_unique_id);
+module.exports.getUserUniqueId = () => module.exports.get().chain(state => state.getUserUniqueId());
 
 module.exports.run = require('./run');
 module.exports.namedTestcase = require('./namedTestcase');
