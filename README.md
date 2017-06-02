@@ -9,7 +9,7 @@ It consists of two major components: legion-metrics, which collects and merges
 performance metrics from various sources; and legion-io, a Promise-based
 library that makes it quick and easy to describe a testcase.
 
-To get started with Legion, try the [starter seed project](https://github.com/lane-webperformance/legion-starter-project).
+To get started with Legion, try the [starter seed project](https://github.com/lane-webperformance/legion-starter-pack).
 
 A legion testcase is chained together from pieces, in much the same way that we use promises:
 
