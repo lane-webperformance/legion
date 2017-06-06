@@ -12,12 +12,12 @@
   "dependencies": {
     "command-line-args": "^4.0.1",
     "command-line-usage": "^4.0.0",
-    "legion-instrument": "https://github.com/lane-webperformance/legion-instrument#v0.0.36",
-    "legion-io": "https://github.com/lane-webperformance/legion-io#v0.0.36",
-    "legion-metrics": "https://github.com/lane-webperformance/legion-metrics#v0.0.36",
-    "legion-capture": "https://github.com/lane-webperformance/legion-capture#v0.0.36",
-    "legion-control": "https://github.com/lane-webperformance/legion-control#v0.0.36",
-    "legion-core": "https://github.com/lane-webperformance/legion-core#v0.0.36",
+    "legion-instrument": "https://github.com/lane-webperformance/legion-instrument#v0.0.37",
+    "legion-io": "https://github.com/lane-webperformance/legion-io#v0.0.37",
+    "legion-metrics": "https://github.com/lane-webperformance/legion-metrics#v0.0.37",
+    "legion-capture": "https://github.com/lane-webperformance/legion-capture#v0.0.37",
+    "legion-control": "https://github.com/lane-webperformance/legion-control#v0.0.37",
+    "legion-core": "https://github.com/lane-webperformance/legion-core#v0.0.37",
     "ramda": "^0.23.0",
     "uuid": "^3.0.1"
   },
