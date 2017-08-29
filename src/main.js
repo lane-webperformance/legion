@@ -51,11 +51,11 @@ function main(testcase) {
   }
 
   if( options['project-key'] )
-    testcase = testcase.projectKey(options['project-key']);
+    testcase = testcase.withProjectKey(options['project-key']);
 
   /* istanbul ignore next */
   if( options['capture-endpoint'] )
-    testcase = testcase.metricsTarget(capture.Target.create(
+    testcase = testcase.withMetricsTarget(capture.Target.create(
         metrics.merge,
         options['capture-endpoint'],
         1000*(options['capture-interval'] || 60),
@@ -63,7 +63,7 @@ function main(testcase) {
 
   /* istanbul ignore next */
   if( options['control-endpoint'] ) {
-    testcase = testcase.control(control.create({
+    testcase = testcase.withController(control.create({
       endpoint: options['control-endpoint']
     }));
   }
