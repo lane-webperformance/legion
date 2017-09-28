@@ -2,23 +2,8 @@
 
 const Io = require('legion-io');
 
-// withSideEffect(Function) : Function
-//
-// Returns a function that acts as an identity
-// (i.e. it returns the value that was passed as a parameter)
-// but triggers the given side effect.
-//
-// Always returns an Io.
-//
-const withSideEffect = (f) => (value) => {
-  return Io.of()
-           .chain(f)
-           .chain(() => value);
-};
-
 module.exports = function(pieces, middle) {
-  return Io.of()
-           .chain(withSideEffect(pieces.before))
-           .chain(middle)
-           .chain(withSideEffect(pieces.after));
+  const cleanup = Io.get().chain(x => pieces.after(x));
+
+  return Io.of().local(pieces.before, Io.of().chain(middle).chain(result => cleanup.chain(() => result)).catch(err => cleanup.chain(() => { throw err; })));
 };

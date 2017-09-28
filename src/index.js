@@ -2,14 +2,14 @@
 
 const Io = require('legion-io');
 const core = require('legion-core');
-const R = require('ramda');
 const main = require('./main');
 
 const Legion = {
-  _beforeTestActions : () => Promise.resolve(),
-  _afterTestActions : () => Promise.resolve(),
-  _addGlobalServices : (x) => Promise.resolve(x),
-  _addUserServices : (x) => Promise.resolve(x),
+  _beforeTestActions : x => Io.of(x),
+  _afterTestActions : x => Io.of(x),
+  _addGlobalServices : x => Io.of(x),
+  _addUserServices : x => Io.of(x),
+  _destroyUserServices : x => Io.of(x),
   _testcase : null
 };
 
@@ -30,17 +30,33 @@ Legion.using = function(module) {
   if( module.userService )
     result = result.withUserService( module.userService );
 
+  result = result.withUserService( module.addUserService, module.destroyUserService );
+
   return result;
 };
+
+// If an IO action returns undefined, return the original input instead. Otherwise, return the defined result.
+function mightBeUndefined(default_value, might_be_undefined) {
+  if( might_be_undefined === undefined )
+    return default_value;
+  else
+    return might_be_undefined;
+}
+
+function returnOrModify(action) {
+  return x => Io.of(x).chain(action).chain(result => Io.of(mightBeUndefined(x,result)));
+}
+
+function compose(first,then) {
+  return x => Io.of(x).chain(first).chain(returnOrModify(then));
+}
 
 Legion.withBeforeTestAction = function(f) {
   if( typeof f !== 'function' )
     throw new Error('not a function: ' + f);
 
-  f = R.compose(x => Promise.resolve(x), f);
-
   return Object.assign(Object.create(Legion), this, {
-    _beforeTestActions : R.composeP(f, this._beforeTestActions)
+    _beforeTestActions : compose(this._beforeTestActions,f)
   });
 };
 
@@ -48,10 +64,8 @@ Legion.withAfterTestAction = function(f) {
   if( typeof f !== 'function' )
     throw new Error('not a function: ' + f);
 
-  f = R.compose(x => Promise.resolve(x), f);
-
   return Object.assign(Object.create(Legion), this, {
-    _afterTestActions : R.composeP(f, this._afterTestActions)
+    _afterTestActions : compose(this._afterTestActions,f)
   });
 };
 
@@ -59,21 +73,24 @@ Legion.withGlobalService = function(f) {
   if( typeof f !== 'function' )
     throw new Error('not a function: ' + f);
 
-  f = R.compose(x => Promise.resolve(x), f);
-
   return Object.assign(Object.create(Legion), this, {
-    _addGlobalServices : R.composeP(f, this._addGlobalServices)
+    _addGlobalServices : compose(this._addGlobalServices,f)
   });
 };
 
-Legion.withUserService = function(f) {
-  if( typeof f !== 'function' )
-    throw new Error('not a function: ' + f);
+Legion.withUserService = function(add, destroy) {
+  add = add || (x => Io.of(x));
+  destroy = destroy || (x => Io.of(x));
 
-  f = R.compose(x => Promise.resolve(x), f);
+  if( typeof add !== 'function' )
+    throw new Error('not a function: ' + add);
+
+  if( typeof destroy !== 'function' )
+    throw new Error('not a function: ' + destroy);
 
   return Object.assign(Object.create(Legion), this, {
-    _addUserServices : R.composeP(f, this._addUserServices)
+    _addUserServices : compose(this._addUserServices,add),
+    _destroyUserServices : compose(this._destroyUserServices,destroy)
   });
 };
 
@@ -105,7 +122,8 @@ Legion.run = function(n) {
     beforeTestActions : this._beforeTestActions,
     afterTestActions : this._afterTestActions,
     addGlobalState : this._addGlobalServices,
-    addUserState : this._addUserServices
+    addUserState : this._addUserServices,
+    destroyUserState : this._destroyUserServices
   }, this._testcase);
 };
 

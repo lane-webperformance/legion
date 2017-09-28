@@ -82,6 +82,20 @@ describe('A testcase built using the Legion builder object', function() {
         .catch(done.fail);
   });
 
+  it('can add cleanup actions for per-user services', function(done) {
+    const important_resource = { in_use: false };
+
+    L.create()
+      .withUserService(() => { important_resource.in_use = true; },
+                       () => { important_resource.in_use = false; })
+      .withTestcase(L.of().chain(() => {
+        expect(important_resource.in_use).toBe(true);
+      })).run(1).assert()
+        .then(() => { expect(important_resource.in_use).toBe(false); })
+        .then(done)
+        .catch(done.fail);
+  });
+
   it('can assign custom MetricsTargets', function(done) {
     let merges = 0;
 

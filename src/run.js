@@ -13,36 +13,46 @@ module.exports = function(options, testcase) {
   if( !Io.isIo(testcase) )
     throw new Error('parameter \'testcase\' is not an instance of Io');
 
+  let global_state = undefined;
+
   // setup default options
   options = Object.assign({
     name : null,
     users : 1,
-    beforeTestActions : () => Promise.resolve(),
-    afterTestActions : () => Promise.resolve(),
-    addGlobalState : x => Promise.resolve(x),
-    addUserState : x => Promise.resolve(x)
+    beforeTestActions : x => Io.of(x),
+    afterTestActions : x => Io.of(x),
+    addUserState : x => Io.of(x),
+    destroyUserState : x => Io.of(x),
+    addGlobalState : x => Io.of(x),
+    destroyGlobalState : x => Io.get().chain(s => {
+      global_state = s;
+      return Io.of(x);
+    })
   }, options);
 
-  const global_state = Promise.resolve().then(options.addGlobalState);
+  testcase = namedTestcase(options.name, testcase);
+  testcase = reportingErrors(testcase);
+  testcase = withConcurrency({ concurrency : options.users, addUserState : options.addUserState, destroyUserState : options.destroyUserState }, testcase);
+  testcase = beforeAndAfter({ before: options.beforeTestActions, after: options.afterTestActions }, testcase);
+  testcase = beforeAndAfter({ before: options.addGlobalState, after: options.destroyGlobalState }, testcase);
 
-  const output = global_state.then(state => {
-    return beforeAndAfter({ before : options.beforeTestActions, after : options.afterTestActions },
-      withConcurrency({ concurrency : options.users, addUserState : x => Promise.resolve(x).then(options.addUserState) },
-        reportingErrors(namedTestcase(options.name, testcase))))
-          .run(state);
-  });
+  const output = testcase.run();
+
+  //TODO: it seems everything after this line could be abstracted out as a destroyGlobalState handler?
 
   // Stringify to pretty human-readable JSON.
-  const metrics_string = output.then(() => global_state).then(state => {
-    if( state && state.getMetricsTarget && state.getMetricsTarget() )
-      return Promise.resolve(state.getMetricsTarget().flush()).then(x => JSON.stringify(x, null, 2));
+  function createMetricsString() {
+    return output.then(() => global_state).then(state => {
+      if( state && state.getMetricsTarget && state.getMetricsTarget() )
+        return Promise.resolve(state.getMetricsTarget().flush()).then(x => JSON.stringify(x, null, 2));
 
-    return JSON.stringify({});
-  });
+      return JSON.stringify({});
+    });
+  }
 
   return {
     log : function() {
-      return output.then(oput => metrics_string.then(json_text => {
+      return output.then(oput => createMetricsString().then(json_text => {
         console.log('output:  ' + oput);
         console.log('metrics: ' + json_text);
         return this.assert();
@@ -56,7 +66,9 @@ module.exports = function(options, testcase) {
       //Stringifying and then re-parsing this result is a good thing, because
       //the internal representation may be some weird intermediates that the user
       //might not know how to access programatically.
-      return metrics_string.then(x => JSON.parse(x));
+      //
+      //TODO: 2017-09-27: this is probably no longer needed
+      return createMetricsString().then(x => JSON.parse(x));
     },
 
     output : function() {
