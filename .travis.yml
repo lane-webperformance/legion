@@ -5,4 +5,3 @@ node_js:
   - "node"
   - "8"  # LTS until December 2019
   - "6"  # LTS until April 2019
-  - "4"  # LTS until April 2018
