@@ -38,6 +38,9 @@ module.exports = function(options, testcase) {
 
   const output = testcase.run();
 
+  // I think I need this here to avoid unhandled promise rejections: TODO: figure out how to not need this
+  output.catch(() => console.error('Legion: there was a problem. This message should be followed by additional details.'));
+
   //TODO: it seems everything after this line could be abstracted out as a destroyGlobalState handler?
 
   // Stringify to pretty human-readable JSON.

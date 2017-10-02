@@ -10,7 +10,7 @@ module.exports = function(testcase) {
 
   return Io.get().chain(function(state) {
     const result = testcase.run(state).catch(function(err) {
-      console.log(err);
+      console.error(err);
       if( state && state.receive )
         state.receive(metrics.problem(err));
       else

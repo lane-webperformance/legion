@@ -7,8 +7,12 @@ const uuid = require('uuid');
 describe('The withConcurrency function', function() {
   it('executes an Io multiple times in parallel', function(done) {
     const wait = function() {
-      return new Promise(function(resolve,_reject) {
-        setTimeout(resolve, 500);
+      return new Promise(function(resolve,reject) {
+        try {
+          setTimeout(resolve, 500);
+        } catch(err) {
+          reject(err);
+        }
       });
     };
     const testcase = Io.of().chain(() => Io.resolve(wait()));

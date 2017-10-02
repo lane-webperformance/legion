@@ -31,12 +31,20 @@
         "semi": [
             2,
             "always"
-        ]
+        ],
+        "promise/no-return-wrap": "error",
+        "promise/param-names": "error",
+        "promise/catch-or-return": "error"
     },
     "env": {
         "es6": true,
         "node": true,
         "jasmine": true
     },
-    "extends": "eslint:recommended"
+    "plugins": [
+        "promise"
+    ],
+    "extends": [
+      "eslint:recommended"
+    ]
 }
