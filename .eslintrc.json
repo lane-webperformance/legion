@@ -33,7 +33,6 @@
             "always"
         ],
         "promise/no-return-wrap": "error",
-        "promise/param-names": "error",
         "promise/catch-or-return": "error"
     },
     "env": {
