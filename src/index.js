@@ -153,7 +153,7 @@ module.exports.getCounters = (counter_key, n) => module.exports.projectKey().cha
 module.exports.getUserUniqueId = () => module.exports.get().chain(state => state.getUserUniqueId());
 
 module.exports.run = require('./run');
-module.exports.namedTestcase = require('./namedTestcase');
+module.exports.named = require('./named');
 module.exports.reportingErrors = require('./reportingErrors');
 module.exports.withConcurrency = require('./withConcurrency');
 

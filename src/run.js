@@ -6,7 +6,7 @@ const Io = require('legion-io');
 
 const withConcurrency = require('./withConcurrency');
 const reportingErrors = require('./reportingErrors');
-const namedTestcase = require('./namedTestcase');
+const named = require('./named');
 const beforeAndAfter = require('./beforeAndAfter');
 
 module.exports = function(options, testcase) {
@@ -30,7 +30,7 @@ module.exports = function(options, testcase) {
     })
   }, options);
 
-  testcase = namedTestcase(options.name, testcase);
+  testcase = named.testcase(options.name, testcase);
   testcase = reportingErrors(testcase);
   testcase = withConcurrency({ concurrency : options.users, addUserState : options.addUserState, destroyUserState : options.destroyUserState }, testcase);
   testcase = beforeAndAfter({ before: options.beforeTestActions, after: options.afterTestActions }, testcase);
