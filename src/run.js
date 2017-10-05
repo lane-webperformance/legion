@@ -47,8 +47,14 @@ module.exports = function(options, testcase) {
   function createMetricsString() {
     return output.then(() => global_state).then(state => {
       if( state && state.getMetricsTarget && state.getMetricsTarget() )
-        return Promise.resolve(state.getMetricsTarget().flush()).then(x => JSON.stringify(x, null, 2));
+        return Promise.resolve(state.getMetricsTarget().flush()).then(x => {
+          if( typeof x === 'undefined' )
+            return JSON.stringify({});
+          else
+            return JSON.stringify(x, null, 2);
+        });
 
+      console.error('MetricsTarget not found in global state. Resulting metrics will be {}.'); // eslint-disable-line no-console
       return JSON.stringify({});
     });
   }

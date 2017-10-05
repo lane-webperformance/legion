@@ -30,4 +30,38 @@ describe('The run method', function() {
   it("doesn't strictly require the default services", function(done) {
     L.run({users:5}, L.of()).assert().then(done).catch(done.fail);
   });
+
+  it('returns the result of the flush() method on the MetricsTarget', function(done) {
+    let called = false;
+
+    const f = target => {
+      expect(metrics.Target.isTarget(target)).toBe(true);
+      called = true;
+      return { 'hello' : 'world' };
+    };
+
+    L.run({ addGlobalState : x => core.Services.create(x).withMetricsTarget(metrics.Target.create(metrics.merge, f)) }, L.of())
+      .metrics()
+      .then(metrics => expect(metrics).toEqual({ 'hello': 'world' }))
+      .then(() => expect(called).toBe(true))
+      .then(done)
+      .catch(done.fail);
+  });
+
+  it('tolerates undefined results from the MetricsTarget callback', function(done) {
+    let called = false;
+
+    const f = target => {
+      expect(metrics.Target.isTarget(target)).toBe(true);
+      called = true;
+      return undefined;
+    };
+
+    L.run({ addGlobalState : x => core.Services.create(x).withMetricsTarget(metrics.Target.create(metrics.merge, f)) }, L.of())
+      .metrics()
+      .then(metrics => expect(metrics).toEqual({}))
+      .then(() => expect(called).toBe(true))
+      .then(done)
+      .catch(done.fail);
+  });
 });
