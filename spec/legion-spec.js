@@ -15,7 +15,7 @@ describe('A testcase built using the Legion builder object', function() {
      .withTestcase(L.of()
        .chain(() => expect(before_side_effect).toBe(true))
        .chain(() => expect(after_side_effect).toBe(false)))
-     .run(20).assert()
+     .assert(20)
        .then(() => expect(before_side_effect).toBe(true))
        .then(() => expect(after_side_effect).toBe(true))
        .then(done)
@@ -27,7 +27,7 @@ describe('A testcase built using the Legion builder object', function() {
      .withProjectKey('jasmine-test-key')
      .withTestcase(L.projectKey()
        .chain(project_key => expect(project_key).toBe('jasmine-test-key')))
-     .run(1).assert()
+     .assert(1)
        .then(done)
        .catch(done.fail);
   });
@@ -41,7 +41,7 @@ describe('A testcase built using the Legion builder object', function() {
       .withProjectKey('jasmine-test-key')
       .withTestcase(L.getControlData()
         .chain(data => expect(data.five).toBe(5)))
-      .run(1).assert()
+      .assert(1)
         .then(done)
         .catch(done.fail);
   });
@@ -55,7 +55,7 @@ describe('A testcase built using the Legion builder object', function() {
       .withProjectKey('jasmine-test-key')
       .withTestcase(L.getCounters('foo',5)
         .chain(data => expect(data.to).toBe(5)))
-      .run(1).assert()
+      .assert(1)
         .then(done)
         .catch(done.fail);
   });
@@ -67,7 +67,7 @@ describe('A testcase built using the Legion builder object', function() {
       .withTestcase(L.getUserUniqueId().chain(uuid => {
         expect(ids.includes(uuid)).toBe(false);
         ids.push(uuid);
-      })).run(1).assert()
+      })).assert(1)
         .then(done)
         .catch(done.fail);
   });
@@ -77,7 +77,7 @@ describe('A testcase built using the Legion builder object', function() {
       .withUserService(services => Object.assign(services, { foo : 'bar' }))
       .withTestcase(L.get().chain(state =>
         expect(state.foo).toBe('bar')
-      )).run(1).assert()
+      )).assert(1)
         .then(done)
         .catch(done.fail);
   });
@@ -90,7 +90,7 @@ describe('A testcase built using the Legion builder object', function() {
                        () => { important_resource.in_use = false; })
       .withTestcase(L.of().chain(() => {
         expect(important_resource.in_use).toBe(true);
-      })).run(1).assert()
+      })).assert(1)
         .then(() => { expect(important_resource.in_use).toBe(false); })
         .then(done)
         .catch(done.fail);
@@ -102,7 +102,7 @@ describe('A testcase built using the Legion builder object', function() {
     L.create()
       .withMetricsTarget(metrics.Target.create(metrics.merge, () => { merges++; return 'Hello, World'; }))
       .withTestcase(L.of())
-      .run(1).assert()
+      .assert(1)
         .then(hello_world => expect(hello_world).toBe(hello_world))
         .then(() => expect(merges).toBe(2)) // 1 call to merge the testcaseCompletion event, 1 call to flush metrics at end-of-test
         .then(done)
@@ -142,7 +142,7 @@ describe('A testcase built using the Legion builder object', function() {
           expect(before_test).toBe(true);
           expect(after_test).toBe(false);
         }))
-      .run(2).assert()
+      .assert(2)
       .then(() => expect(after_test).toBe(true))
       .then(() => expect(users).toBe(2))
       .then(done)
@@ -153,7 +153,7 @@ describe('A testcase built using the Legion builder object', function() {
     L.create()
       .using({_legion_hooks:{}})
       .withTestcase(L.of())
-      .run(5).assert()
+      .assert(5)
       .then(done)
       .catch(done.fail);
   });

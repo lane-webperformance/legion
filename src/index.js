@@ -127,6 +127,15 @@ Legion.run = function(n) {
   }, this._testcase);
 };
 
+Legion.assert = function() {
+  return this.run.apply(this, arguments).then(results => {
+    if( results.problems )
+      throw new Error('At least one problem was encountered.');
+
+    return results;
+  });
+};
+
 Legion.main = function() {
   return main(this);
 };

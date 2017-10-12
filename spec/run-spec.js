@@ -6,7 +6,9 @@ const metrics = require('legion-metrics');
 
 describe('The run method', function() {
   it('instruments whole-testcase completions', function(done) {
-    L.run({name:'jasmine_testcase', users:5, addGlobalState : x => core.Services.create(x).withMetricsTarget(metrics.Target.create(metrics.merge))}, L.of()).assert().then(function(result) {
+    L.run({name:'jasmine_testcase', users:5, addGlobalState : x => core.Services.create(x).initProblemCounter().withMetricsTarget(metrics.Target.create(metrics.merge))}, L.of()).then(function(result) {
+      expect(result.problems).toBeFalsy();
+      result = result.metrics;
       expect(result.tags.testcaseCompletion.jasmine_testcase.values.duration.$avg.size).toBe(5);
     }).then(done).catch(done.fail);
   });
@@ -14,21 +16,24 @@ describe('The run method', function() {
   it('has access to the Io\'s embedded state', function(done) {
     L.run({users:5, addGlobalState : x => core.Services.create(x)}, L.get().chain(function(state) {
       expect(typeof state.getMetricsTarget).toBe('function');
-    })).assert()
-       .then(done)
+    })).then(done)
        .catch(done.fail);
   });
 
   it('catches all errors', function(done) {
     L.run({name:'jasmine_testcase',users:5, addGlobalState : x => core.Services.create(x).withMetricsTarget(metrics.Target.create(metrics.merge))}, L.of()
-      .chain(function() { throw 'expected failure'; })).metrics().then(function(result) {
-        expect(result.tags.everything.everything.problems.problems$sum).toBe(5);
-        expect(result.tags.testcase.jasmine_testcase.tags.outcome.failure.values.duration.$avg.size).toBe(5);
+      .chain(function() { throw 'expected failure'; })).then(function(results) {
+        expect(results.problems).toBeTruthy();
+        results = results.metrics;
+        expect(results.tags.everything.everything.problems.problems$sum).toBe(5);
+        expect(results.tags.testcase.jasmine_testcase.tags.outcome.failure.values.duration.$avg.size).toBe(5);
       }).then(done).catch(done.fail);
   });
 
   it("doesn't strictly require the default services", function(done) {
-    L.run({users:5}, L.of()).assert().then(done).catch(done.fail);
+    L.run({users:5}, L.of())
+     .then(done)
+     .catch(done.fail);
   });
 
   it('returns the result of the flush() method on the MetricsTarget', function(done) {
@@ -40,10 +45,10 @@ describe('The run method', function() {
       return { 'hello' : 'world' };
     };
 
-    L.run({ addGlobalState : x => core.Services.create(x).withMetricsTarget(metrics.Target.create(metrics.merge, f)) }, L.of())
-      .metrics()
-      .then(metrics => expect(metrics).toEqual({ 'hello': 'world' }))
-      .then(() => expect(called).toBe(true))
+    L.run({ addGlobalState : x => core.Services.create(x).initProblemCounter().withMetricsTarget(metrics.Target.create(metrics.merge, f)) }, L.of()).then(results => {
+      expect(results.problems).toBeFalsy();
+      expect(results.metrics).toEqual({ 'hello': 'world' });
+    }).then(() => expect(called).toBe(true))
       .then(done)
       .catch(done.fail);
   });
@@ -57,11 +62,12 @@ describe('The run method', function() {
       return undefined;
     };
 
-    L.run({ addGlobalState : x => core.Services.create(x).withMetricsTarget(metrics.Target.create(metrics.merge, f)) }, L.of())
-      .metrics()
-      .then(metrics => expect(metrics).toEqual({}))
-      .then(() => expect(called).toBe(true))
-      .then(done)
+    L.run({ addGlobalState : x => core.Services.create(x).initProblemCounter().withMetricsTarget(metrics.Target.create(metrics.merge, f)) }, L.of()).then(results => {
+      expect(results.problems).toBeFalsy();
+      results = results.metrics;
+      expect(results).toEqual({});
+      expect(called).toBe(true);
+    }).then(done)
       .catch(done.fail);
   });
 });

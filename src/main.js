@@ -72,8 +72,11 @@ function main(testcase) {
 
   return Promise.resolve()
     .then(() => testcase.run(options.users))
-    .then(results => results.log())
-    .catch(err => {
+    .then(results => {
+      console.log(JSON.stringify(results, null, 2));
+      if( results.problems )
+        throw new Error('Logged ' + results.problems + ' problems.');
+    }).catch(err => {
       process.exitCode = 1;
       console.error(err);
       throw err;
