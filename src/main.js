@@ -79,7 +79,7 @@ function main(testcase) {
     }).catch(err => {
       process.exitCode = 1;
       console.error(err);
-      throw err;
+      return err;
     });
 }
 

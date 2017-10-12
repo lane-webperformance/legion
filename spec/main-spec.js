@@ -22,10 +22,10 @@ describe('The main method', function() {
       .withBeforeTestAction(() => { throw new Error('expected error'); })
       .withTestcase(L.of());
 
-    testcase.main().then(done.fail).catch(() => {
+    testcase.main().then(err => {
+      expect(err.message).toEqual('expected error');
       expect(process.exitCode).toBe(1);
       process.exitCode = undefined;
-      done();
-    });
+    }).then(done).catch(done.fail);
   });
 });
