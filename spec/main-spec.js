@@ -11,7 +11,7 @@ describe('The main method', function() {
       .withTestcase(L.of()
         .chain(() => { side_effect = true; }));
 
-    testcase.main().then(() => {
+    testcase.main(['node','unit-test.js','-n','1']).then(() => {
       expect(side_effect).toBe(true);
       done();
     }).catch(done.fail);

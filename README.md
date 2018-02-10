@@ -35,6 +35,61 @@ And then executed from the command line (in this case, with 50 concurrent users)
 
 Visit the [wiki](https://github.com/lane-webperformance/legion/wiki) for more information.
 
+Command Line Options
+====================
+
+When you run a Legion script using the main() method, you automatically get a
+number of CLI options:
+
+--control-server
+----------------
+
+Self-host a control server inside this instance. You must also use the
+--control-endpoint flag to direct any running tests to update their command and
+control data from here.
+
+--control-endpoint \[url\]
+------------------
+
+Retrieve command and contol information from a control server at the given URL.
+
+--control-interval \[integer\]
+------------------
+
+Interval between updating command and control data from the control endpoint, in seconds.
+
+--capture-server
+----------------
+
+Self-host a metrics-capture server inside this instance. You must also use the
+--capture-endpoint flag to direct any running tests to send their metrics data
+here.
+
+--capture-endpoint \[url\]
+------------------
+
+Send metrics data to a metrics capture server at the given URL.
+
+--capture-interval \[integer\]
+------------------
+
+Interval between flushing metrics data to the metrics capture endpoint, in seconds.
+
+--project-key \[string\]
+-------------
+
+An arbitrary value used to identify this project or testing campaign. All Legion instances that are participating in the same project or testing campaign should use the same project-key. This allows metrics and control data for different projects to be kept separate.
+
+--self-hosted
+-------------
+
+Automatically sets --control-server, --control-endpoint, --capture-server, and --capture-endpoint to sensible values for a self-contained, self-hosted, single-machine test run.
+
+--users
+-------
+
+Sets the number of concurrent users. By default, this will be 1.
+
 API
 ===
 
