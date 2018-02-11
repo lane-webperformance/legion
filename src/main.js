@@ -46,6 +46,7 @@ function printUsage() {
  */
 function main(testcase, argv) {
   const options = cli(cli_option_definitions, { argv });
+  let default_number_of_users = 1;
 
   /* istanbul ignore next */
   if( options.help ) {
@@ -61,6 +62,7 @@ function main(testcase, argv) {
   }
 
   if( options['capture-server']) {
+    default_number_of_users = 0;
     const port = 8510;
 
     control.server.metrics(control.client.pouchdb.create('metrics-capture-database')).listen(port, function() {
@@ -69,6 +71,7 @@ function main(testcase, argv) {
   }
 
   if( options['control-server']) {
+    default_number_of_users = 0;
     const port = 8511;
 
     capture.server.listen(port, function() {
@@ -95,7 +98,7 @@ function main(testcase, argv) {
     }));
   }
 
-  options.users = typeof options.users === 'number' ? options.users : 0;
+  options.users = typeof options.users === 'number' ? options.users : default_number_of_users;
 
   return Promise.resolve()
     .then(() => testcase.run(options.users))
