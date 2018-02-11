@@ -10,7 +10,7 @@
   "author": "Christopher Lane Hinson <lane@webperformance.com>",
   "license": "APSL-2.0",
   "dependencies": {
-    "command-line-args": "^4.0.1",
+    "command-line-args": "^5.0.2",
     "command-line-usage": "^4.0.0",
     "legion-capture": "https://github.com/lane-webperformance/legion-capture#v0.0.51",
     "legion-control": "https://github.com/lane-webperformance/legion-control#v0.0.51",
@@ -18,14 +18,14 @@
     "legion-instrument": "https://github.com/lane-webperformance/legion-instrument#v0.0.51",
     "legion-io": "https://github.com/lane-webperformance/legion-io#v0.0.51",
     "legion-metrics": "https://github.com/lane-webperformance/legion-metrics#v0.0.51",
-    "ramda": "^0.23.0",
+    "ramda": "^0.25.0",
     "uuid": "^3.0.1"
   },
   "devDependencies": {
-    "eslint": "^2.11.1",
+    "eslint": "^4.17.0",
     "eslint-plugin-promise": "^3.5.0",
     "istanbul": "^0.4.2",
-    "jasmine": "^2.4.1",
+    "jasmine": "^3.0.0",
     "rimraf": "^2.5.2"
   }
 }

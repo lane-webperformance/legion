@@ -85,10 +85,10 @@ function main(testcase, argv) {
   /* istanbul ignore next */
   if( options['capture-endpoint'] ) {
     testcase = testcase.withMetricsTarget(capture.Target.create(
-        metrics.merge,
-        options['capture-endpoint'],
-        1000*(options['capture-interval'] || 60),
-        { project_key:options['project-key'] }));
+      metrics.merge,
+      options['capture-endpoint'],
+      1000*(options['capture-interval'] || 60),
+      { project_key:options['project-key'] }));
   }
 
   /* istanbul ignore next */

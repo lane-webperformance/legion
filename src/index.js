@@ -136,11 +136,8 @@ Legion.assert = function() {
   });
 };
 
-Legion.main = function(args) {
-  if( args )
-    console.log('warning: legion: main(argv): this is an undocumented capability that may break in the future'); //eslint-disable-line no-console
-
-  return main(this,args || process.argv);
+Legion.main = function() {
+  return main(this,process.argv);
 };
 
 module.exports.create = function() {

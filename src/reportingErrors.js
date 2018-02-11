@@ -13,9 +13,11 @@ module.exports = function(testcase) {
       console.error(err);
       if( state && state.receive )
         state.receive(metrics.problem(err));
-      else
-        throw err; // the entire purpose of this function was to report error metrics instead of throwing an error
-                   // but apparently we don't have the ability to report any metrics at all, so just burn everything
+      else {
+        // the entire purpose of this function was to report error metrics instead of throwing an error
+        // but apparently we don't have the ability to report any metrics at all . . . so . . . just burn everything
+        throw err;
+      }
     });
 
     return Io.resolve(result);
