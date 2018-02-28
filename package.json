@@ -14,6 +14,7 @@
     "command-line-usage": "^4.0.0",
     "legion-capture": "https://github.com/lane-webperformance/legion-capture#v0.0.52",
     "legion-control": "https://github.com/lane-webperformance/legion-control#v0.0.52",
+    "legion-aqueduct": "https://github.com/lane-webperformance/legion-aqueduct",
     "legion-core": "https://github.com/lane-webperformance/legion-core#v0.0.52",
     "legion-instrument": "https://github.com/lane-webperformance/legion-instrument#v0.0.52",
     "legion-io": "https://github.com/lane-webperformance/legion-io#v0.0.52",

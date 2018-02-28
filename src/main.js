@@ -11,6 +11,10 @@ const control = (function() {
   try      { return require('legion-control'); }
   catch(e) { return null;                      }
 })();
+const aqueduct = (function() {
+  try      { return require('legion-aqueduct'); }
+  catch(e) { return null;                      }
+})();
 const metrics = require('legion-metrics');
 
 const cli_option_definitions = [
@@ -20,6 +24,7 @@ const cli_option_definitions = [
   { name: 'capture-server',          type: Boolean,                                    description: 'self-host a local metrics capture server' },
   { name: 'capture-endpoint',        type: String,  typeLabel: '[underline]{URL}',     description: 'endpoint of remote metrics capture server' },
   { name: 'capture-interval',        type: Number,  typeLabel: '[underline]{seconds}', description: 'interval between streaming metrics to the capture server' },
+  { name: 'human-server',            type: Boolean,                                    description: 'self-host a server to expose a human-readable interface' },
   { name: 'help',                    type: Boolean,                                    description: 'print this help message' },
   { name: 'project-key',             type: String,  typeLabel: '[underline]{string}',  description: 'project unique key' },
   { name: 'self-hosted',             tyoe: Boolean,                                    description: 'self-host local command & control and metrics capture servers, and use them; suitable for testing scripts on a single machine' },
@@ -56,14 +61,14 @@ function main(testcase, argv) {
 
   if( options['self-hosted']) {
     options['capture-server'] = options['capture-server'] || true;
-    options['capture-endpoint'] = options['capture-endpoint'] || 'http://localhost:8510';
     options['control-server'] = options['control-server'] || true;
-    options['control-endpoint'] = options['control-endpoint'] || 'http://localhost:8511';
+    options['human-server'] = options['human-server'] || true;
   }
 
   if( options['capture-server']) {
     default_number_of_users = 0;
     const port = 8510;
+    options['capture-endpoint'] = options['capture-endpoint'] || 'http://localhost:' + port;
 
     control.server.metrics(control.client.pouchdb.create('metrics-capture-database')).listen(port, function() {
       console.log('legion-capture listening on port ' + port + '.');
@@ -73,9 +78,18 @@ function main(testcase, argv) {
   if( options['control-server']) {
     default_number_of_users = 0;
     const port = 8511;
+    options['control-endpoint'] = options['control-endpoint'] || 'http://localhost:' + port;
 
     capture.server.listen(port, function() {
       console.log('legion-control listening on port ' + port + '.');
+    });
+  }
+
+  if( options['human-server']) {
+    const port = 8512;
+
+    aqueduct({ capture_endpoint: options['capture-endpoint'], project_key: options['project-key'] }).listen(port, function() {
+      console.log('legion-aqueduct listening on port ' + port + '.');
     });
   }
 
